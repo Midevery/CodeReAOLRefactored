@@ -107,17 +107,20 @@ public class MenuManager {
     }
 
     private void addUser() {
-        System.out.print("Username: ");
-        String uname = scanner.nextLine();
-        System.out.print("Password: ");
-        String pass = scanner.nextLine();
-        System.out.print("Role (ADMIN/USER): ");
-        String roleStr = scanner.nextLine();
+        System.out.print("Username: "); 
+        String uname = scanner.nextLine(); 
+        System.out.print("Password: "); 
+        String pass = scanner.nextLine(); 
+        System.out.print("Role (ADMIN/USER): "); 
+        String roleStr = scanner.nextLine(); 
 
         try {
             Role role = Role.valueOf(roleStr.trim().toUpperCase());
-            userService.addUser(uname, pass, role);
-            System.out.println("User added successfully.");
+            if (userService.addUser(uname, pass, role)) {
+                System.out.println("User added successfully.");
+            } else {
+                System.out.println("User '" + uname + "' already exists.");
+            }
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid role. Please enter either 'ADMIN' or 'USER'.");
         }
@@ -130,15 +133,17 @@ public class MenuManager {
     }
 
     private void depositToUser() {
-        System.out.print("Username: ");
-        String uname = scanner.nextLine();
-        System.out.print("Amount: ");
-        int amount = inputUtil.readInt();
+        System.out.print("Username: "); 
+        String uname = scanner.nextLine(); 
+        System.out.print("Amount: "); 
+        int amount = inputUtil.readInt(); 
 
-        if (userService.depositToUser(uname, amount)) {
-            System.out.println("Deposit successful.");
-        } else {
-            System.out.println("User not found or deposit failed.");
+        int depositStatus = userService.depositToUser(uname, amount);
+        switch (depositStatus) {
+            case 0 -> System.out.println("Deposit successful.");
+            case -1 -> System.out.println("User not found.");
+            case -2 -> System.out.println("Deposit amount must be positive.");
+            default -> System.out.println("An unknown error occurred during deposit.");
         }
     }
 

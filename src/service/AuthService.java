@@ -1,6 +1,7 @@
 package service;
 
 import domain.User;
+import java.util.Optional;
 
 public class AuthService {
     private UserService userService;
@@ -10,7 +11,13 @@ public class AuthService {
     }
 
     public User login(String username, String password) {
-        User user = userService.findByUsername(username);
-        return (user != null && user.getPassword().equals(password)) ? user : null;
+        Optional<User> optUser = userService.findByUsername(username);
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+            if (user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        return null;
     }
 }

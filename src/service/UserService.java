@@ -5,6 +5,7 @@ import domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
     private final List<User> users = new ArrayList<>();
@@ -14,35 +15,37 @@ public class UserService {
         users.add(new User("user", "user123", Role.USER));
     }
 
-    public void addUser(String username, String password, Role role) {
-        if (findByUsername(username) != null) {
-            System.out.println("User already exists.");
-            return;
+    public boolean addUser(String username, String password, Role role) {
+        if (findByUsername(username).isPresent()) {
+            return false;
         }
         users.add(new User(username, password, role));
-        System.out.println("User added.");
+        return true;
     }
 
-    public User findByUsername(String username) {
-        return users.stream().filter(u -> u.getUsername().equals(username)).findFirst().orElse(null);
+    public Optional<User> findByUsername(String username) {
+        return users.stream()
+                .filter(u -> u.getUsername().equals(username))
+                .findFirst();
     }
 
     public List<User> getAllUsers() {
-        return users;
+        return new ArrayList<>(users);
     }
 
-    public boolean depositToUser(String username, int amount) {
-        User user = findByUsername(username);
-        if (user == null) {
-            System.out.println("User not found.");
-            return false;
+    public int depositToUser(String username, int amount) {
+        Optional<User> optUser = findByUsername(username);
+
+        if (optUser.isEmpty()) {
+            return -1;
         }
+
         if (amount <= 0) {
-            System.out.println("Amount must be positive.");
-            return false;
+            return -2;
         }
+
+        User user = optUser.get();
         user.deposit(amount);
-        System.out.println("Deposited " + amount);
-        return true;
+        return 0;
     }
 }
