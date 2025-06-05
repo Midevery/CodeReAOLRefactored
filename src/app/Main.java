@@ -9,6 +9,8 @@ import util.InputUtil;
 
 import java.util.Scanner;
 
+import Repository.ItemRepository;
+
 public class Main {
     private final Scanner scanner;
     private final InputUtil inputUtil;
@@ -20,7 +22,8 @@ public class Main {
         this.inputUtil = new InputUtil(scanner);
         UserService userService = new UserService();
         this.authService = new AuthService(userService);
-        InventoryService inventoryService = new InventoryService();
+        ItemRepository itemRepository = new ItemRepository();
+        InventoryService inventoryService = new InventoryService(itemRepository);
         this.menuManager = new MenuManager(scanner, inputUtil, inventoryService, userService);
     }
 
